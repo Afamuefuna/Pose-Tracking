@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        InvokeRepeating(nameof(AnimateSprite), 1f/12f, 1f/12f);
+        InvokeRepeating(nameof(AnimateSprite), 1f / 12f, 1f / 12f);
     }
 
     private void OnDisable()
@@ -74,24 +74,39 @@ public class Player : MonoBehaviour
 
     private void SetDirection()
     {
-        if (climbing) {
+        if (climbing)
+        {
             direction.y = Input.GetAxis("Vertical") * moveSpeed;
-        } else if (grounded && Input.GetButtonDown("Jump")) {
+        }
+        else if (grounded && BodyInput.triggerJump)
+        {
             direction = Vector2.up * jumpStrength;
-        } else {
+
+            BodyInput.triggerJump = false;
+        }
+        else if (grounded && Input.GetButtonDown("Jump"))
+        {
+            direction = Vector2.up * jumpStrength;
+        }
+        else
+        {
             direction += Physics2D.gravity * Time.deltaTime;
         }
 
         direction.x = Input.GetAxis("Horizontal") * moveSpeed;
 
         // Prevent gravity from building up infinitely
-        if (grounded) {
+        if (grounded)
+        {
             direction.y = Mathf.Max(direction.y, -1f);
         }
 
-        if (direction.x > 0f) {
+        if (direction.x > 0f)
+        {
             transform.eulerAngles = Vector3.zero;
-        } else if (direction.x < 0f) {
+        }
+        else if (direction.x < 0f)
+        {
             transform.eulerAngles = new Vector3(0f, 180f, 0f);
         }
     }
@@ -111,7 +126,8 @@ public class Player : MonoBehaviour
         {
             spriteIndex++;
 
-            if (spriteIndex >= runSprites.Length) {
+            if (spriteIndex >= runSprites.Length)
+            {
                 spriteIndex = 0;
             }
 
@@ -121,6 +137,8 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //check if manager script exist
+
         if (collision.gameObject.CompareTag("Objective"))
         {
             enabled = false;
@@ -132,5 +150,4 @@ public class Player : MonoBehaviour
             FindObjectOfType<GameManager>().LevelFailed();
         }
     }
-
 }
